@@ -16,6 +16,6 @@ namespace Models
 
         public DateTime ExecutionDate { get; set;}
 
-        public DateTime AfterDeadLine { get; set; }
+        public int AfterDeadLine { get; set;}
     }
 }
