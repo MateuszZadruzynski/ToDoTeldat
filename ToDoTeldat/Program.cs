@@ -1,9 +1,19 @@
+using DBConnect;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
+using ToDoTeldat.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var connnectionString = builder.Configuration.GetConnectionString("Default")
+    ?? throw new NullReferenceException("No connection string!");
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddDbContextFactory<DBConnects>((DbContextOptionsBuilder options) => 
+    options.UseSqlServer(connnectionString));
+
+builder.Services.AddTransient<ToDoTaskService>();
 
 var app = builder.Build();
 
