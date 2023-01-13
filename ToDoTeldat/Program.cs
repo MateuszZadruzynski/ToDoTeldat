@@ -2,6 +2,8 @@ using DBConnect;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using Radzen;
+using ToDoTeldat.Interfaces;
 using ToDoTeldat.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +15,10 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContextFactory<DBConnects>((DbContextOptionsBuilder options) => 
     options.UseSqlServer(connnectionString));
 
-builder.Services.AddTransient<ToDoTaskService>();
+builder.Services.AddTransient<IToDoTask,ToDoTaskService>();
+
+builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<NotificationService>();
 
 var app = builder.Build();
 

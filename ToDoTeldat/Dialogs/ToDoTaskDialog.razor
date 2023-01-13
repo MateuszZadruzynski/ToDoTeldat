@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using Models;
+@using Radzen.Blazor
+@using ToDoTeldat.Interfaces;
+
+@inject IToDoTask Task;
+@inject NotificationService Notification;
+@inject DialogService DialogService;
+
+<RadzenCard>
+    <h2>Nowe zadanie:</h2>
+
+    <RadzenTemplateForm Data="@toDoTasks" Submit="@((ToDoTask args) => { SaveTask(args); })">
+        <div class="col">
+            <div class="row">
+                <label class="d-block">Nazwa:</label>
+                <RadzenTextBox placeholder="Sprzątanie" @bind-Value="toDoTasks.Name" />
+            </div>
+            <div class="row">
+                <label class="d-block">Opis:</label>
+                <RadzenTextBox placeholder="Odkurzyć, umyć naczynia, wyrzucić śmieci.." @bind-Value="toDoTasks.Description" />
+            </div>
+            <div class="row">
+                <label class="d-block">Data zakończenia:</label>
+                <RadzenDatePicker Name="Data zakończenia" @bind-Value="toDoTasks.ExecutionDate" />
+            </div>
+
+            <div class="row" style="margin-top: 16px;">
+                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Zapisz" />
+            </div>
+        </div>
+    </RadzenTemplateForm>
+</RadzenCard>
+@code {
+    private ToDoTask toDoTasks { get; set; } = new ToDoTask();
+
+    public async Task SaveTask(ToDoTask toDoTasks)
+    {
+        try
+        {
+            toDoTasks.CreatedDate = DateTime.Now;
+            if ((toDoTasks.ExecutionDate - DateTime.Now).Days > 0)
+            {
+                toDoTasks.AfterDeadLine = 0;
+                await Task.AddTask(toDoTasks);
+            }
+            else
+            {
+                Notification.Notify(NotificationSeverity.Error, "Błąd daty!", "Data wykonania nie może być mniejsza od obecnej!");
+            }
+        }
+        catch (Exception ex)
+        {
+            Notification.Notify(NotificationSeverity.Error, "Błąd zapisu!", "Błąd podczas zapisywania danych!");
+        }
+        DialogService.Close();
+    }
+}

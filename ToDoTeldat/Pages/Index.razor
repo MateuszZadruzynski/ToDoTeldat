@@ -1,3 +1,60 @@
 ﻿@page "/"
+@using Models;
+@using Radzen;
+@using ToDoTeldat.Dialogs;
+@using ToDoTeldat.Interfaces;
 
-<h1>Hello, world!</h1>
+@inject IToDoTask Task;
+@inject NotificationService Notification;
+@inject DialogService DialogService;
+
+
+<Radzen.Blazor.RadzenCard Style="p-5 m-2">
+    <h2>ToDoList</h2>
+    <div class="row p-2">
+        <div class="col p-2">
+            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                            Data="@toDoTasks" TItem="ToDoTask" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+                <Columns>
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="Name" Title="Nazwa" Frozen="true" Width="160px" />
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="Description" Title="Opis" Width="260px" />
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="CreatedDate" Title="Data utworzenia" FormatString="{0:d}" Width="160px" />
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="ExecutionDate" Title="Data wykonania" FormatString="{0:d}" Width="160px" />
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="AfterDeadLine" Title="Po terminie" Width="160px" />
+                </Columns>
+            </RadzenDataGrid>
+        </div>
+        <div class="col p-2 m-2 float-end">
+            <Radzen.Blazor.RadzenButton Click="Save" Text="AddTask" />
+        </div>
+    </div>
+</Radzen.Blazor.RadzenCard>
+
+@code {
+    private IEnumerable<ToDoTask> toDoTasks { get; set; }
+
+    protected async Task OnInitializedAsync()
+    {
+        try
+        {
+            await UpdateData();
+        }
+        catch (Exception ex)
+        {
+            Notification.Notify(NotificationSeverity.Error, "Błąd przy inicializacji!", "Błą podczas pobierania danych!");
+        }
+    }
+
+    public async Task UpdateData()
+    {
+        toDoTasks = Task.GetTasks();
+    }
+
+    public async Task Save()
+    {
+        await DialogService.OpenAsync<ToDoTaskDialog>("Dodawania zadania!", null,
+              new DialogOptions() { Width = "700px", Height = "512px", Resizable = true, Draggable = true });
+        await UpdateData();
+    }
+}

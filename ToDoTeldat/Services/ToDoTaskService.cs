@@ -14,6 +14,25 @@ namespace ToDoTeldat.Services
             DbContextFactory = dbContextFactory;
         }
 
+        public IEnumerable<ToDoTask> GetTasks()
+        {
+            try
+            {
+                using (var context = DbContextFactory.CreateDbContext())
+                {
+                    var data = context.ToDoTasks.Select(x => x);
+
+                   return data;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Błąd podczas dodwania zadania!", ex);
+                return Enumerable.Empty<ToDoTask>();
+            }
+        }
+
         public async Task AddTask(ToDoTask toDoTask)
         {
             try
