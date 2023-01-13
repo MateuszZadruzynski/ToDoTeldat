@@ -12,20 +12,20 @@
 
     <RadzenTemplateForm Data="@toDoTasks" Submit="@((ToDoTask args) => { SaveTask(args); })">
         <div class="col">
-            <div class="row">
+            <div class="row p-2">
                 <label class="d-block">Nazwa:</label>
-                <RadzenTextBox placeholder="Sprzątanie" @bind-Value="toDoTasks.Name" />
+                <RadzenTextBox placeholder="Sprzątanie" @bind-Value="toDoTasks.Name" Style="width:90%" />
             </div>
-            <div class="row">
+            <div class="row p-2">
                 <label class="d-block">Opis:</label>
-                <RadzenTextBox placeholder="Odkurzyć, umyć naczynia, wyrzucić śmieci.." @bind-Value="toDoTasks.Description" />
+                <RadzenTextBox placeholder="Odkurzyć, umyć naczynia, wyrzucić śmieci.." @bind-Value="toDoTasks.Description" Style="width:90%" />
             </div>
-            <div class="row">
+            <div class="row p-2">
                 <label class="d-block">Data zakończenia:</label>
-                <RadzenDatePicker Name="Data zakończenia" @bind-Value="toDoTasks.ExecutionDate" />
+                <RadzenDatePicker Name="Data zakończenia" ShowTime="true" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt" @bind-Value="toDoTasks.ExecutionDate" Style="width:86%" />
             </div>
 
-            <div class="row" style="margin-top: 16px;">
+            <div class="row p-2">
                 <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Zapisz" />
             </div>
         </div>
@@ -34,7 +34,12 @@
 @code {
     private ToDoTask toDoTasks { get; set; } = new ToDoTask();
 
-    public async Task SaveTask(ToDoTask toDoTasks)
+    protected void OnInitialized()
+    {
+        toDoTasks.ExecutionDate = DateTime.Now;
+    }
+
+    public void SaveTask(ToDoTask toDoTasks)
     {
         try
         {
@@ -42,7 +47,7 @@
             if ((toDoTasks.ExecutionDate - DateTime.Now).Days > 0)
             {
                 toDoTasks.AfterDeadLine = 0;
-                await Task.AddTask(toDoTasks);
+                Task.AddTask(toDoTasks);
             }
             else
             {
@@ -53,6 +58,7 @@
         {
             Notification.Notify(NotificationSeverity.Error, "Błąd zapisu!", "Błąd podczas zapisywania danych!");
         }
+        DialogService.Dispose();
         DialogService.Close();
     }
 }

@@ -13,7 +13,7 @@
     <h2>ToDoList</h2>
     <div class="row p-2">
         <div class="col p-2">
-            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.SimpleWithMenu" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                             Data="@toDoTasks" TItem="ToDoTask" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
                 <Columns>
                     <RadzenDataGridColumn TItem="ToDoTask" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
@@ -22,19 +22,21 @@
                     <RadzenDataGridColumn TItem="ToDoTask" Property="CreatedDate" Title="Data utworzenia" FormatString="{0:d}" Width="160px" />
                     <RadzenDataGridColumn TItem="ToDoTask" Property="ExecutionDate" Title="Data wykonania" FormatString="{0:d}" Width="160px" />
                     <RadzenDataGridColumn TItem="ToDoTask" Property="AfterDeadLine" Title="Po terminie" Width="160px" />
+
                 </Columns>
             </RadzenDataGrid>
         </div>
-        <div class="col p-2 m-2 float-end">
-            <Radzen.Blazor.RadzenButton Click="Save" Text="AddTask" />
-        </div>
+    </div>
+    <div class="col p-5 m-5" style="float:right">
+        <Radzen.Blazor.RadzenButton Click="Save" Text="AddTask" Style="margin-top:2px;float:right" />
     </div>
 </Radzen.Blazor.RadzenCard>
 
 @code {
-    private IEnumerable<ToDoTask> toDoTasks { get; set; }
+    private List<ToDoTask> toDoTasks { get; set; } = new List<ToDoTask>();
 
-    protected async Task OnInitializedAsync()
+
+    protected override async Task OnInitializedAsync()
     {
         try
         {

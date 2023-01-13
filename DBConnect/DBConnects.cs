@@ -7,6 +7,14 @@ namespace DBConnect
     {
         public DBConnects(DbContextOptions<DBConnects> options) : base(options) 
         {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         #region DbSets

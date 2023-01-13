@@ -14,45 +14,50 @@ namespace ToDoTeldat.Services
             DbContextFactory = dbContextFactory;
         }
 
-        public IEnumerable<ToDoTask> GetTasks()
+        public List<ToDoTask> GetTasks()
         {
             try
             {
                 using (var context = DbContextFactory.CreateDbContext())
                 {
-                    var data = context.ToDoTasks.Select(x => x);
+                    var data = context.ToDoTasks.Where(x => x.Id != null).ToList();
 
-                   return data;
+                    return data;
                 }
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Błąd podczas dodwania zadania!", ex);
-                return Enumerable.Empty<ToDoTask>();
+                return new List<ToDoTask>();
             }
         }
 
-        public async Task AddTask(ToDoTask toDoTask)
+        public void AddTask(ToDoTask toDoTask)
         {
             try
             {
                 using (var context = DbContextFactory.CreateDbContext())
                 {
-                    await context.ToDoTasks.AddAsync(toDoTask);
+                    context.ToDoTasks.Add(toDoTask);
+                    context.SaveChanges();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Błąd podczas dodwania zadania!",ex);
+                Console.WriteLine("Błąd podczas dodwania zadania!", ex);
             }
         }
 
-        public async Task DeleteTask(int taskId)
+        public void DeleteTask(ToDoTask toDoTask)
         {
             try
             {
-               
+                using (var context = DbContextFactory.CreateDbContext())
+                {
+                    context.ToDoTasks.Remove(toDoTask);
+                    context.SaveChanges();
+                }
             }
             catch (Exception ex)
             {
@@ -60,11 +65,15 @@ namespace ToDoTeldat.Services
             }
         }
 
-        public async Task EditTask(ToDoTask toDoTask)
+        public void EditTask(ToDoTask toDoTask)
         {
             try
             {
-               
+                using (var context = DbContextFactory.CreateDbContext())
+                {
+                    context.ToDoTasks.Update(toDoTask);
+                    context.SaveChanges();
+                }
             }
             catch (Exception ex)
             {

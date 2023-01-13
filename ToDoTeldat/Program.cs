@@ -15,7 +15,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContextFactory<DBConnects>((DbContextOptionsBuilder options) => 
     options.UseSqlServer(connnectionString));
 
-builder.Services.AddTransient<IToDoTask,ToDoTaskService>();
+builder.Services.AddScoped<IToDoTask,ToDoTaskService>();
 
 builder.Services.AddScoped<DialogService>();
 builder.Services.AddScoped<NotificationService>();
