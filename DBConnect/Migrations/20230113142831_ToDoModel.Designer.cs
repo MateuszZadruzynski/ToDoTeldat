@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DBConnect.Migrations
 {
     [DbContext(typeof(DBConnects))]
-    [Migration("20230113125318_RenameModelBigLeter")]
-    partial class RenameModelBigLeter
+    [Migration("20230113142831_ToDoModel")]
+    partial class ToDoModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,8 +33,8 @@ namespace DBConnect.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AfterDeadLine")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("AfterDeadLine")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");

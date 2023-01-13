@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DBConnect.Migrations
 {
     /// <inheritdoc />
-    public partial class ToDoListModel : Migration
+    public partial class ToDoModel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "toDoLists",
+                name: "ToDoTasks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -21,11 +21,11 @@ namespace DBConnect.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExecutionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AfterDeadLine = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    AfterDeadLine = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_toDoLists", x => x.Id);
+                    table.PrimaryKey("PK_ToDoTasks", x => x.Id);
                 });
         }
 
@@ -33,7 +33,7 @@ namespace DBConnect.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "toDoLists");
+                name: "ToDoTasks");
         }
     }
 }

@@ -30,8 +30,8 @@ namespace DBConnect.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AfterDeadLine")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("AfterDeadLine")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
