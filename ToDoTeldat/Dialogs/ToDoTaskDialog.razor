@@ -7,34 +7,32 @@
 @inject NotificationService Notification;
 @inject DialogService DialogService;
 
-<RadzenCard>
-    <h2>Nowe zadanie:</h2>
+<h2>Nowe zadanie:</h2>
 
-    <RadzenTemplateForm Data="@toDoTasks" Submit="@((ToDoTask args) => { SaveTask(args); })">
-        <div class="col">
-            <div class="row p-2">
-                <label class="d-block">Nazwa:</label>
-                <RadzenTextBox placeholder="Sprzątanie" @bind-Value="toDoTasks.Name" Style="width:90%" />
-            </div>
-            <div class="row p-2">
-                <label class="d-block">Opis:</label>
-                <RadzenTextBox placeholder="Odkurzyć, umyć naczynia, wyrzucić śmieci.." @bind-Value="toDoTasks.Description" Style="width:90%" />
-            </div>
-            <div class="row p-2">
-                <label class="d-block">Data zakończenia:</label>
-                <RadzenDatePicker Name="Data zakończenia" ShowTime="true" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt" @bind-Value="toDoTasks.ExecutionDate" Style="width:86%" />
-            </div>
-
-            <div class="row p-2">
-                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="Zapisz" />
-            </div>
+<RadzenTemplateForm Data="@toDoTasks" Submit="@((ToDoTask args) => { SaveTask(args); })">
+    <div class="col">
+        <div class="row p-2">
+            <label class="d-block">Nazwa:</label>
+            <RadzenTextBox placeholder="Sprzątanie" @bind-Value="toDoTasks.Name" Style="width:90%" />
         </div>
-    </RadzenTemplateForm>
-</RadzenCard>
+        <div class="row p-2">
+            <label class="d-block">Opis:</label>
+            <RadzenTextBox placeholder="Odkurzyć, umyć naczynia, wyrzucić śmieci.." @bind-Value="toDoTasks.Description" Style="width:90%" />
+        </div>
+        <div class="row p-2">
+            <label class="d-block">Data zakończenia:</label>
+            <RadzenDatePicker Name="Data zakończenia" ShowTime="true" HourFormat="12" DateFormat="MM/dd/yyyy h:mm tt" @bind-Value="toDoTasks.ExecutionDate" Style="width:86%" />
+        </div>
+
+        <div class="row p-2">
+            <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Style="margin-top:35px;float:right"  Text="Zapisz" />
+        </div>
+    </div>
+</RadzenTemplateForm>
 @code {
     private ToDoTask toDoTasks { get; set; } = new ToDoTask();
 
-    protected void OnInitialized()
+    protected override void OnInitialized()
     {
         toDoTasks.ExecutionDate = DateTime.Now;
     }

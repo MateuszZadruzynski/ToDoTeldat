@@ -10,37 +10,87 @@
 
 
 <Radzen.Blazor.RadzenCard Style="p-5 m-2">
-    <h2>ToDoList</h2>
-    <div class="row p-2">
+    <div class="rz-shadow-3" style="pt-5">
+        <h2>
+            ToDoList
+            <RadzenIcon Icon="calendar_month"></RadzenIcon>
+        </h2>
+    </div>
+    <div class="row p-5">
         <div class="col p-2">
-            <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.SimpleWithMenu" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                            Data="@toDoTasks" TItem="ToDoTask" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or">
+            <RadzenDataGrid @ref="taskGrid" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.SimpleWithMenu" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                          Data="@toDoTasks" TItem="ToDoTask" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" RowUpdate="@OnUpdateRow">
                 <Columns>
                     <RadzenDataGridColumn TItem="ToDoTask" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
-                    <RadzenDataGridColumn TItem="ToDoTask" Property="Name" Title="Nazwa" Frozen="true" Width="160px" />
-                    <RadzenDataGridColumn TItem="ToDoTask" Property="Description" Title="Opis" Width="260px" />
-                    <RadzenDataGridColumn TItem="ToDoTask" Property="CreatedDate" Title="Data utworzenia" FormatString="{0:d}" Width="160px" />
-                    <RadzenDataGridColumn TItem="ToDoTask" Property="ExecutionDate" Title="Data wykonania" FormatString="{0:d}" Width="160px" />
-                    <RadzenDataGridColumn TItem="ToDoTask" Property="AfterDeadLine" Title="Po terminie" Width="160px" />
-
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="Name" Title="Nazwa" Width="160px">
+                        <EditTemplate Context="data">
+                            <RadzenTextBox @bind-Value="data.Name"/>
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="Description" Title="Opis" Width="260px">
+                        <EditTemplate Context="data">
+                            <RadzenTextBox @bind-Value="data.Description" />
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="CreatedDate" Title="Data utworzenia" Width="160px"/>
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="ExecutionDate" Title="Data wykonania" Width="160px">
+                        <EditTemplate Context="data">
+                            <RadzenDatePicker @bind-Value="data.ExecutionDate" />
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="AfterDeadLine" Title="Po terminie" Width="160px">
+                        <Template Context="data">
+                            @if (data.ExecutionDate < dataTimeNow)
+                            {
+                                @((data.ExecutionDate - dataTimeNow).Days)
+                            }
+                            else
+                            {
+                                @data.AfterDeadLine
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ToDoTask" Context="order" Filterable="false" Sortable="false" TextAlign="TextAlign.Right" Width="80px">
+                        <Template Context="data">
+                            <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@(args => EditRow(data))" @onclick:stopPropagation="true">
+                            </RadzenButton>
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => DeleteRow(data))" @onclick:stopPropagation="true">
+                            </RadzenButton>
+                        </Template>
+                        <EditTemplate Context="data">
+                            <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Success" Variant="Variant.Flat" Size="ButtonSize.Medium" Click="@((args) => SaveRow(data))">
+                            </RadzenButton>
+                            <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@((args) => CancelEdit(data))">
+                            </RadzenButton>
+                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" Class="my-1 ms-1" Click="@(args => DeleteRow(data))">
+                            </RadzenButton>
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
                 </Columns>
             </RadzenDataGrid>
         </div>
     </div>
     <div class="col p-5 m-5" style="float:right">
-        <Radzen.Blazor.RadzenButton Click="Save" Text="AddTask" Style="margin-top:2px;float:right" />
+        <Radzen.Blazor.RadzenButton Click="Save" Text="Dodaj" Icon="add" Style="margin-top:35px;float:right" />
     </div>
 </Radzen.Blazor.RadzenCard>
 
 @code {
+    RadzenDataGrid<ToDoTask> taskGrid;
+
     private List<ToDoTask> toDoTasks { get; set; } = new List<ToDoTask>();
 
+    private ToDoTask taskToUpdate { get; set; } = new ToDoTask();
+
+    private DateTime dataTimeNow => DateTime.Now;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             await UpdateData();
+
+
         }
         catch (Exception ex)
         {
@@ -53,10 +103,39 @@
         toDoTasks = Task.GetTasks();
     }
 
+    void OnUpdateRow(ToDoTask task)
+    {
+        task.AfterDeadLine = 0;
+        Task.EditTask(task);
+    }
+
     public async Task Save()
     {
         await DialogService.OpenAsync<ToDoTaskDialog>("Dodawania zadania!", null,
               new DialogOptions() { Width = "700px", Height = "512px", Resizable = true, Draggable = true });
+        await UpdateData();
+    }
+
+    async Task EditRow(ToDoTask task)
+    {
+        taskToUpdate = task;
+        await taskGrid.EditRow(task);
+    }
+
+
+    async Task SaveRow(ToDoTask task)
+    {
+        await taskGrid.UpdateRow(task);
+    }
+
+    void CancelEdit(ToDoTask task)
+    {
+        taskGrid.CancelEditRow(task);
+    }
+
+    async Task DeleteRow(ToDoTask task)
+    {
+        Task.DeleteTask(task);
         await UpdateData();
     }
 }
