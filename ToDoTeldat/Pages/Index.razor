@@ -19,12 +19,12 @@
     <div class="row p-5">
         <div class="col p-2">
             <RadzenDataGrid @ref="taskGrid" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.SimpleWithMenu" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                          Data="@toDoTasks" TItem="ToDoTask" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" RowUpdate="@OnUpdateRow">
+                            Data="@toDoTasks" TItem="ToDoTask" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" RowUpdate="@OnUpdateRow">
                 <Columns>
                     <RadzenDataGridColumn TItem="ToDoTask" Property="Id" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
                     <RadzenDataGridColumn TItem="ToDoTask" Property="Name" Title="Nazwa" Width="160px">
                         <EditTemplate Context="data">
-                            <RadzenTextBox @bind-Value="data.Name"/>
+                            <RadzenTextBox @bind-Value="data.Name" />
                         </EditTemplate>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="ToDoTask" Property="Description" Title="Opis" Width="260px">
@@ -32,7 +32,7 @@
                             <RadzenTextBox @bind-Value="data.Description" />
                         </EditTemplate>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="ToDoTask" Property="CreatedDate" Title="Data utworzenia" Width="160px"/>
+                    <RadzenDataGridColumn TItem="ToDoTask" Property="CreatedDate" Title="Data utworzenia" Width="160px" />
                     <RadzenDataGridColumn TItem="ToDoTask" Property="ExecutionDate" Title="Data wykonania" Width="160px">
                         <EditTemplate Context="data">
                             <RadzenDatePicker @bind-Value="data.ExecutionDate" />
@@ -95,6 +95,19 @@
         catch (Exception ex)
         {
             Notification.Notify(NotificationSeverity.Error, "Błąd przy inicializacji!", "Błą podczas pobierania danych!");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var notfifyTasks = toDoTasks.Select(x => x).Where(x => x.ExecutionDate < dataTimeNow.AddDays(2));
+
+            foreach (var task in notfifyTasks)
+            {
+                Notification.Notify(NotificationSeverity.Info, "Zbliżające się wydarzenie!", $"Wydarzenie {task.Name} odbywające się {task.ExecutionDate}, zbliża się do terminu końcowego!",7000);
+            }
         }
     }
 
